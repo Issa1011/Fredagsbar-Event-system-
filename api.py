@@ -6,7 +6,6 @@ events = [
     {"id": 3, "title": "Beerpong", "date": "2026-11-27", "capacity": 4, "participants": ["Sara"]}
 ]
 
-# betyder at man kan hente alle events via adressen /events
 @app.get("/events")
 def get_events():
     return jsonify(events), 200
