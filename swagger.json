@@ -1,0 +1,206 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Fredagsbar Event API",
+    "version": "1.0.0",
+    "description": "API til at oprette events og administrere tilmeldinger."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:5001"
+    }
+  ],
+  "paths": {
+    "/events": {
+      "get": {
+        "summary": "Hent alle events",
+        "responses": {
+          "200": {
+            "description": "Liste over events",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Event"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Opret et event",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewEvent"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Event oprettet"
+          },
+          "400": {
+            "description": "Ugyldige eller manglende oplysninger"
+          }
+        }
+      }
+    },
+    "/events/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/EventId"
+        }
+      ],
+      "get": {
+        "summary": "Hent et event",
+        "responses": {
+          "200": {
+            "description": "Event fundet"
+          },
+          "404": {
+            "description": "Eventet findes ikke"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Slet et event",
+        "responses": {
+          "204": {
+            "description": "Event slettet"
+          },
+          "404": {
+            "description": "Eventet findes ikke"
+          }
+        }
+      }
+    },
+    "/events/{id}/signups": {
+      "post": {
+        "summary": "Tilmeld en deltager",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EventId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Deltager tilmeldt"
+          },
+          "400": {
+            "description": "Navn mangler"
+          },
+          "404": {
+            "description": "Eventet findes ikke"
+          },
+          "409": {
+            "description": "Eventet er fuldt, eller personen er allerede tilmeldt"
+          }
+        }
+      }
+    },
+    "/events/{id}/signups/{name}": {
+      "delete": {
+        "summary": "Afmeld en deltager",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/EventId"
+          },
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deltager afmeldt"
+          },
+          "404": {
+            "description": "Event eller tilmelding findes ikke"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "parameters": {
+      "EventId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "integer"
+        }
+      }
+    },
+    "schemas": {
+      "Event": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "capacity": {
+            "type": "integer"
+          },
+          "participants": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "NewEvent": {
+        "type": "object",
+        "required": ["title", "date", "capacity"],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "capacity": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  }
+}
